@@ -2,25 +2,22 @@ WhitelistManager = require '../src/whitelist-manager'
 
 describe 'WhitelistManager', ->
   beforeEach ->
-    @database =
-      devices:
-        findOne: sinon.stub()
+    @datastore =
+      findOne: sinon.stub()
 
-    @sut = new WhitelistManager database: @database
+    @sut = new WhitelistManager datastore: @datastore
 
   describe '->canConfigure', ->
     describe 'when called with a valid toUuid, fromUuid', ->
       beforeEach (done) ->
-        @database
-          .devices
+        @datastore
           .findOne
           .withArgs uuid: 'great-scott'
           .yields null,
             uuid: 'great-scott'
             configureWhitelist: ['oh boy']
 
-        @database
-          .devices
+        @datastore
           .findOne
           .withArgs uuid: 'oh boy'
           .yields null,
@@ -34,16 +31,14 @@ describe 'WhitelistManager', ->
 
     describe 'when called with a invalid toUuid, fromUuid', ->
       beforeEach (done) ->
-        @database
-          .devices
+        @datastore
           .findOne
           .withArgs uuid: 'ya son'
           .yields null,
             uuid: 'ya son'
             configureWhitelist: ['not for real']
 
-        @database
-          .devices
+        @datastore
           .findOne
           .withArgs uuid: 'for real'
           .yields null,
@@ -57,8 +52,7 @@ describe 'WhitelistManager', ->
 
     describe 'when called and toDevice fetch yields an error', ->
       beforeEach (done) ->
-        @database
-          .devices
+        @datastore
           .findOne
           .withArgs uuid: 'quit dreaming'
           .yields new Error("no way")
@@ -70,15 +64,13 @@ describe 'WhitelistManager', ->
 
     describe 'when called and fromDevice fetch yields an error', ->
       beforeEach (done) ->
-        @database
-          .devices
+        @datastore
           .findOne
           .withArgs uuid: 'forget about it'
           .yields null,
             uuid: 'forget about it'
 
-        @database
-          .devices
+        @datastore
           .findOne
           .withArgs uuid: 'sunshine and rainbows'
           .yields new Error("cry me a river")

@@ -5,9 +5,7 @@ util   = require '../src/util'
 describe 'CheckWhitelist', ->
   beforeEach ->
     CheckWhitelist = require '../src/check-whitelist'
-    @dependencies =
-      authDevice : sinon.stub()
-    @sut = new CheckWhitelist @dependencies
+    @sut = new CheckWhitelist
 
   it 'should exist', ->
     expect(@sut).to.exist
@@ -696,7 +694,6 @@ describe 'CheckWhitelist', ->
           {hash: 0}
          ]
         @message = token: '5555'
-        @dependencies.authDevice.yields new Error
         @sut.database = @getDatabaseForDevice @toDevice
 
       it 'should return false', (done) ->

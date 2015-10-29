@@ -1,14 +1,13 @@
 CheckWhitelist = require './check-whitelist'
 
 class WhitelistManager
-  constructor: (dependencies={}) ->
-    {@devices} = dependencies.database
+  constructor: ({@datastore}) ->
     @checkWhitelist = new CheckWhitelist
 
   canConfigure: (toUuid, fromUuid, callback) =>
-    @devices.findOne uuid: toUuid, (error, toDevice) =>
+    @datastore.findOne uuid: toUuid, (error, toDevice) =>
       return callback error if error?
-      @devices.findOne uuid: fromUuid, (error, fromDevice) =>
+      @datastore.findOne uuid: fromUuid, (error, fromDevice) =>
         return callback error if error?
         @checkWhitelist.canConfigure fromDevice, toDevice, (error, canConfigure) =>
           callback null, canConfigure
