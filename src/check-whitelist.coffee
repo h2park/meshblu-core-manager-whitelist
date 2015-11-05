@@ -1,5 +1,4 @@
 util    = require './util'
-bcrypt  = require 'bcrypt'
 _       = require 'lodash'
 
 class CheckWhitelist

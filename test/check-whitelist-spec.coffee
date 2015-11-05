@@ -1,5 +1,4 @@
 _      = require 'lodash'
-bcrypt = require 'bcrypt'
 util   = require '../src/util'
 
 describe 'CheckWhitelist', ->
@@ -681,36 +680,6 @@ describe 'CheckWhitelist', ->
 
       it 'should return true', (next) ->
         @sut.canConfigure( @fromDevice, @toDevice, (error, permission) =>
-          expect(permission).to.be.true
-          next()
-        )
-
-    describe 'when toDevice is different from fromMessage, and has sent a message that includes a random uuid', ->
-      beforeEach ->
-        @fromDevice = uuid: 1
-        @toDevice = uuid: 2, tokens: [
-          {hash: bcrypt.hashSync('69',1)}
-          {hash: 0}
-          {hash: 0}
-         ]
-        @message = token: '5555'
-        @sut.database = @getDatabaseForDevice @toDevice
-
-      it 'should return false', (done) ->
-        @sut.canConfigure( @fromDevice, @toDevice, @message, (error, permission) =>
-          expect(permission).to.be.false
-          done()
-        )
-
-    describe 'when the owner of a device sends a configure command, but gets the token wrong', ->
-      beforeEach ->
-        @fromDevice = uuid: 1
-        @toDevice = uuid: 2, tokens: [bcrypt.hashSync('69',1)], owner: 1
-        @message = token: '5555'
-        @sut.database = @getDatabaseForDevice @toDevice
-
-      it 'should do it anyway', (next) ->
-        @sut.canConfigure( @fromDevice, @toDevice, @message, (error, permission) =>
           expect(permission).to.be.true
           next()
         )
