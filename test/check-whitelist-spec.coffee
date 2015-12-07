@@ -3,8 +3,9 @@ util   = require '../src/util'
 
 describe 'CheckWhitelist', ->
   beforeEach ->
+    @uuidAliasResolver = resolve: (uuid, callback) => callback(null, uuid)
     CheckWhitelist = require '../src/check-whitelist'
-    @sut = new CheckWhitelist
+    @sut = new CheckWhitelist {@uuidAliasResolver}
 
   it 'should exist', ->
     expect(@sut).to.exist
@@ -699,7 +700,7 @@ describe 'CheckWhitelist', ->
     describe 'when a device is in the configureWhitelist', ->
       beforeEach (next) ->
         @fromDevice = uuid: 1
-        @sut.checkLists = sinon.stub().returns true
+        @sut._checkLists = sinon.stub().yields null, true
         @toDevice = uuid: 8, configureWhitelist: [7], configureBlacklist: [6]
         @sut.canConfigure(@fromDevice, @toDevice, (error, permission) =>
           @result = permission
@@ -707,17 +708,17 @@ describe 'CheckWhitelist', ->
         )
 
       it 'should call checkLists', ->
-        expect(@sut.checkLists).to.have.been.called
+        expect(@sut._checkLists).to.have.been.called
 
       it 'should call checkLists', ->
-        expect(@sut.checkLists).to.have.been.calledWith @fromDevice, @toDevice, @toDevice.configureWhitelist, @toDevice.configureBlacklist, false
+        expect(@sut._checkLists).to.have.been.calledWith @fromDevice, @toDevice, @toDevice.configureWhitelist, @toDevice.configureBlacklist, false
 
       it 'should have a result of true', ->
         expect(@result).to.be.true
 
     describe 'when a different device is in the configureWhitelist', ->
       beforeEach (next)->
-        @sut.checkLists = sinon.stub().returns false
+        @sut._checkLists = sinon.stub().yields null, false
         @sut.canConfigure(null, null, (error, permission) =>
           @result = permission
           next()
@@ -730,14 +731,14 @@ describe 'CheckWhitelist', ->
       beforeEach (next) ->
         @fromDevice = uuid: 7
         @toDevice = uuid: 8, configureWhitelist: [5], configureBlacklist: [6]
-        @sut.checkLists = sinon.stub().returns false
+        @sut._checkLists = sinon.stub().yields null, false
         @sut.canConfigure(@fromDevice, @toDevice, (error, permission) =>
           @result = permission
           next()
         )
 
       it 'should call checkLists', ->
-        expect(@sut.checkLists).to.have.been.calledWith @fromDevice, @toDevice, @toDevice.configureWhitelist, @toDevice.configureBlacklist, false
+        expect(@sut._checkLists).to.have.been.calledWith @fromDevice, @toDevice, @toDevice.configureWhitelist, @toDevice.configureBlacklist, false
 
     describe 'when a device is unclaimed, and exists on a different lan than the configuring device', ->
       beforeEach (next) ->

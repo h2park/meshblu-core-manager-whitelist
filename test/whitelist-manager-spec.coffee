@@ -2,10 +2,12 @@ WhitelistManager = require '../src/whitelist-manager'
 
 describe 'WhitelistManager', ->
   beforeEach ->
+    @uuidAliasResolver = resolve: (uuid, callback) => callback(null, uuid)
+
     @datastore =
       findOne: sinon.stub()
 
-    @sut = new WhitelistManager datastore: @datastore
+    @sut = new WhitelistManager {@datastore, @uuidAliasResolver}
 
   describe '->canConfigure', ->
     describe 'when called with a valid toUuid, fromUuid', ->
