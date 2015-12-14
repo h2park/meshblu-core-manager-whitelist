@@ -43,7 +43,7 @@ describe 'CheckWhitelist', ->
         @fromDevice = uuid: 1
         @toDevice = uuid: 2
 
-      it 'should return false', (next) ->
+      it 'should return true', (next) ->
         @sut.canDiscover( @fromDevice, @toDevice, (error, permission) =>
           expect(permission).to.be.true
           next()
@@ -101,6 +101,100 @@ describe 'CheckWhitelist', ->
           expect(permission).to.be.false
           next()
         )
+
+  describe 'canDiscoverAs', ->
+    it 'should exist', ->
+      expect(@sut.canDiscoverAs).to.exist
+
+    describe 'when fromDevice is undefined', ->
+      it 'should return false', (next) ->
+        @sut.canDiscoverAs(undefined, uuid: 1, (error, permission) =>
+          expect(permission).to.be.false
+          next()
+        )
+
+    describe 'when toDevice is undefined', ->
+      it 'should return false', (next) ->
+        @sut.canDiscoverAs( uuid: 1, undefined, (error, permission) =>
+          expect(permission).to.be.false
+          next()
+        )
+
+    describe 'when fromDevice is the same device as toDevice', ->
+      beforeEach ->
+        @fromDevice = uuid: 1
+        @toDevice = uuid: 1
+      it 'should return true', (next) ->
+        @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
+          expect(permission).to.be.true
+          next()
+        )
+
+    describe 'when fromDevice is a different device than toDevice', ->
+      beforeEach ->
+        @fromDevice = uuid: 1
+        @toDevice = uuid: 2
+
+      it 'should return false', (next) ->
+        @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
+          expect(permission).to.be.false
+          next()
+        )
+
+      describe 'when toDevice has a discoverAsWhitelist that doesn\'t have fromDevice\'s uuid', ->
+        beforeEach ->
+          @toDevice.discoverAsWhitelist = [5]
+
+        it 'should return false', (next) ->
+          @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
+            expect(permission).to.be.false
+            next()
+          )
+
+      describe 'when toDevice has a discoverAsWhitelist containing "*"', ->
+        beforeEach ->
+          @toDevice.discoverAsWhitelist = ['*']
+
+        it 'should return true', (next)->
+          @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
+            expect(permission).to.be.true
+            next()
+          )
+
+      describe 'when toDevice has a discoverAsWhitelist is "*"', ->
+        beforeEach ->
+          @toDevice.discoverAsWhitelist = '*'
+
+        it 'should return true', (next)->
+          @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
+            expect(permission).to.be.true
+            next()
+          )
+
+
+    describe 'when fromDevice owns toDevice', ->
+      beforeEach ->
+        @fromDevice = owner: 4321, uuid: 1234
+        @toDevice = owner: 1234, uuid: 2222
+
+      it 'should return true', (next)->
+        @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
+          expect(permission).to.be.true
+          next()
+        )
+
+    describe 'when fromDevice is in the toDevice\'s discoverBlacklist', ->
+      beforeEach ->
+        @fromDevice = uuid: 1234
+        @toDevice = uuid: 2222, discoverBlacklist: [ 1234 ]
+
+      it 'should return false', (next) ->
+        @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
+          expect(permission).to.be.false
+          next()
+        )
+
+
   describe 'canSend', ->
     it 'should exist', ->
       expect(@sut.canSend).to.exist
