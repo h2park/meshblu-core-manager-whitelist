@@ -74,9 +74,9 @@ class CheckWhitelist
     if _.isFunction message
       callback = message
       message = null
-
+    
     return @asyncCallback(null, false, callback) if !fromDevice || !toDevice
-
+    console.log 'canDiscover', arguments
     @_checkLists fromDevice, toDevice, toDevice.discoverWhitelist, toDevice.discoverBlacklist, true, (error, inList) =>
       return callback error if error?
       return callback null, true if inList

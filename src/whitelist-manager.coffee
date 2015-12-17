@@ -25,8 +25,8 @@ class WhitelistManager
           return callback error if error?
           @datastore.findOne uuid: fromUuid, (error, fromDevice) =>
             return callback error if error?
-            @checkWhitelist.canDiscover fromDevice, toDevice, (error, canConfigure) =>
-              callback null, canConfigure
+            @checkWhitelist.canDiscover fromDevice, toDevice, (error, canDiscover) =>
+              callback null, canDiscover
 
   canDiscoverAs: ({fromUuid, toUuid}, callback) =>
     @uuidAliasResolver.resolve toUuid, (error, toUuid) =>
@@ -37,7 +37,7 @@ class WhitelistManager
           return callback error if error?
           @datastore.findOne uuid: fromUuid, (error, fromDevice) =>
             return callback error if error?
-            @checkWhitelist.canDiscoverAs fromDevice, toDevice, (error, canConfigure) =>
-              callback null, canConfigure
+            @checkWhitelist.canDiscoverAs fromDevice, toDevice, (error, canDiscoverAs) =>
+              callback null, canDiscoverAs
 
 module.exports = WhitelistManager
