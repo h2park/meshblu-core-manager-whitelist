@@ -4,7 +4,7 @@ class WhitelistManager
   constructor: ({@datastore,@uuidAliasResolver}) ->
     @checkWhitelist = new CheckWhitelist {@uuidAliasResolver}
 
-  canConfigure: (toUuid, fromUuid, callback) =>
+  canConfigure: ({fromUuid, toUuid}, callback) =>
     @uuidAliasResolver.resolve toUuid, (error, toUuid) =>
       return callback error if error?
       @datastore.findOne uuid: toUuid, (error, toDevice) =>
@@ -16,7 +16,7 @@ class WhitelistManager
             @checkWhitelist.canConfigure fromDevice, toDevice, (error, canConfigure) =>
               callback null, canConfigure
 
-  canDiscover: (toUuid, fromUuid, callback) =>
+  canDiscover: ({fromUuid, toUuid}, callback) =>
     @uuidAliasResolver.resolve toUuid, (error, toUuid) =>
       return callback error if error?
       @datastore.findOne uuid: toUuid, (error, toDevice) =>
@@ -28,7 +28,7 @@ class WhitelistManager
             @checkWhitelist.canDiscover fromDevice, toDevice, (error, canConfigure) =>
               callback null, canConfigure
 
-  canDiscoverAs: (toUuid, fromUuid, callback) =>
+  canDiscoverAs: ({fromUuid, toUuid}, callback) =>
     @uuidAliasResolver.resolve toUuid, (error, toUuid) =>
       return callback error if error?
       @datastore.findOne uuid: toUuid, (error, toDevice) =>
