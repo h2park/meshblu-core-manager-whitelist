@@ -1,4 +1,3 @@
-util    = require './util'
 async   = require 'async'
 _       = require 'lodash'
 
@@ -47,10 +46,7 @@ class CheckWhitelist
 
       return @asyncCallback(null, true, callback) if fromDevice.uuid == toDevice.uuid
 
-      if toDevice.owner?
-        return @asyncCallback(null, true, callback) if toDevice.owner == fromDevice.uuid
-      else
-        return @asyncCallback(null, true, callback) if util.sameLAN(fromDevice.ipAddress, toDevice.ipAddress)
+      return @asyncCallback(null, true, callback) if toDevice.owner == fromDevice.uuid if toDevice.owner?
 
       @asyncCallback(null, false, callback)
 
@@ -75,7 +71,7 @@ class CheckWhitelist
       callback = message
       message = null
 
-    return @asyncCallback(null, false, callback) if !fromDevice || !toDevice  
+    return @asyncCallback(null, false, callback) if !fromDevice || !toDevice
     @_checkLists fromDevice, toDevice, toDevice.discoverWhitelist, toDevice.discoverBlacklist, true, (error, inList) =>
       return callback error if error?
       return callback null, true if inList
