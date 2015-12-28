@@ -9,7 +9,7 @@ describe 'CheckWhitelist', ->
   it 'should exist', ->
     expect(@sut).to.exist
 
-  describe 'canDiscover', ->
+  describe.only 'canDiscover', ->
     it 'should exist', ->
       expect(@sut.canDiscover).to.exist
 
@@ -40,7 +40,7 @@ describe 'CheckWhitelist', ->
     describe 'when fromDevice is a different device than toDevice', ->
       beforeEach ->
         @fromDevice = uuid: 1
-        @toDevice = uuid: 2
+        @toDevice = uuid: 2, discoverWhitelist: ['*']
 
       it 'should return true', (next) ->
         @sut.canDiscover( @fromDevice, @toDevice, (error, permission) =>
@@ -72,9 +72,9 @@ describe 'CheckWhitelist', ->
         beforeEach ->
           @toDevice.discoverWhitelist = '*'
 
-        it 'should return true', (next)->
+        it 'should return false', (next)->
           @sut.canDiscover( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.true
+            expect(permission).to.be.false
             next()
           )
 
@@ -166,7 +166,7 @@ describe 'CheckWhitelist', ->
 
         it 'should return true', (next)->
           @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.true
+            expect(permission).to.be.false
             next()
           )
 
@@ -624,7 +624,7 @@ describe 'CheckWhitelist', ->
 
         it 'should return true', (next)->
           @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.true
+            expect(permission).to.be.false
             next()
           )
 
