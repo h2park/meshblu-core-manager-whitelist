@@ -28,7 +28,7 @@ class CheckWhitelist
             return callback null, true if toDeviceUuid == fromDeviceUuid
             return callback null, true if toDevice.owner &&  toDevice.owner == fromDeviceUuid
 
-            return callback null, false unless resolvedWhitelist instanceof Array
+            return callback null, false unless _.isArray resolvedWhitelist
 
             return callback null, true if _.contains resolvedWhitelist, '*'
 
@@ -64,7 +64,7 @@ class CheckWhitelist
   canDiscoverAs: (fromDevice, toDevice, message, callback) =>
     if _.isFunction message
       callback = message
-      message = null    
+      message = null
 
     @_checkLists fromDevice, toDevice, toDevice?.discoverAsWhitelist, toDevice?.discoverAsBlacklist, callback
 
