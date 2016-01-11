@@ -4,9 +4,6 @@ _       = require 'lodash'
 class CheckWhitelist
   constructor: ({@uuidAliasResolver}) ->
 
-  asyncCallback: (error, result, callback) =>
-    _.defer callback, error, result
-
   _checkLists: (fromDevice, toDevice, whitelist, blacklist, callback) =>
     return callback null, false unless fromDevice? && toDevice?
 
@@ -45,14 +42,12 @@ class CheckWhitelist
 
     @_checkLists fromDevice, toDevice, toDevice?.configureWhitelist, toDevice?.configureBlacklist, callback
 
-
   canConfigureAs: (fromDevice, toDevice, message, callback) =>
     if _.isFunction message
       callback = message
       message = null
 
     @_checkLists fromDevice, toDevice, toDevice?.configureAsWhitelist, toDevice?.configureAsBlacklist, callback
-
 
   canDiscover: (fromDevice, toDevice, message, callback) =>
     if _.isFunction message

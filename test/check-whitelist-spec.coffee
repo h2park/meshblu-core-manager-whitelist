@@ -9,7 +9,7 @@ describe 'CheckWhitelist', ->
   it 'should exist', ->
     expect(@sut).to.exist
 
-  describe.only 'canDiscover', ->
+  describe 'canDiscover', ->
     it 'should exist', ->
       expect(@sut.canDiscover).to.exist
 
@@ -67,17 +67,6 @@ describe 'CheckWhitelist', ->
             expect(permission).to.be.true
             next()
           )
-
-      describe 'when toDevice has a discoverWhitelist is "*"', ->
-        beforeEach ->
-          @toDevice.discoverWhitelist = '*'
-
-        it 'should return false', (next)->
-          @sut.canDiscover( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.false
-            next()
-          )
-
 
     describe 'when fromDevice owns toDevice', ->
       beforeEach ->
@@ -160,17 +149,6 @@ describe 'CheckWhitelist', ->
             next()
           )
 
-      describe 'when toDevice has a discoverAsWhitelist is "*"', ->
-        beforeEach ->
-          @toDevice.discoverAsWhitelist = '*'
-
-        it 'should return true', (next)->
-          @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.false
-            next()
-          )
-
-
     describe 'when fromDevice owns toDevice', ->
       beforeEach ->
         @fromDevice = owner: 4321, uuid: 1234
@@ -229,7 +207,7 @@ describe 'CheckWhitelist', ->
 
       it 'should return false', (next) ->
         @sut.canSend( @fromDevice, @toDevice, (error, permission) =>
-          expect(permission).to.be.true
+          expect(permission).to.be.false
           next()
         )
 
@@ -252,17 +230,6 @@ describe 'CheckWhitelist', ->
             expect(permission).to.be.true
             next()
           )
-
-      describe 'when toDevice has a sendWhitelist is "*"', ->
-        beforeEach ->
-          @toDevice.sendWhitelist = '*'
-
-        it 'should return true', (next)->
-          @sut.canSend( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.true
-            next()
-          )
-
 
     describe 'when fromDevice owns toDevice', ->
       beforeEach ->
@@ -321,7 +288,7 @@ describe 'CheckWhitelist', ->
 
       it 'should return false', (next) ->
         @sut.canReceive( @fromDevice, @toDevice, (error, permission) =>
-          expect(permission).to.be.true
+          expect(permission).to.be.false
           next()
         )
 
@@ -338,16 +305,6 @@ describe 'CheckWhitelist', ->
       describe 'when toDevice has a receiveWhitelist containing "*"', ->
         beforeEach ->
           @toDevice.receiveWhitelist = ['*']
-
-        it 'should return true', (next)->
-          @sut.canReceive( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.true
-            next()
-          )
-
-      describe 'when toDevice has a receiveWhitelist is "*"', ->
-        beforeEach ->
-          @toDevice.receiveWhitelist = '*'
 
         it 'should return true', (next)->
           @sut.canReceive( @fromDevice, @toDevice, (error, permission) =>
@@ -436,16 +393,6 @@ describe 'CheckWhitelist', ->
             next()
           )
 
-      describe 'when toDevice has a receiveAsWhitelist is "*"', ->
-        beforeEach ->
-          @toDevice.receiveAsWhitelist = '*'
-
-        it 'should return true', (next)->
-          @sut.canReceiveAs( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.true
-            next()
-          )
-
     describe 'when fromDevice owns toDevice', ->
       beforeEach ->
         @fromDevice = owner: 4321, uuid: 1234
@@ -520,16 +467,6 @@ describe 'CheckWhitelist', ->
       describe 'when toDevice has a sendAsWhitelist containing "*"', ->
         beforeEach ->
           @toDevice.sendAsWhitelist = ['*']
-
-        it 'should return true', (next)->
-          @sut.canSendAs( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.true
-            next()
-          )
-
-      describe 'when toDevice has a sendAsWhitelist is "*"', ->
-        beforeEach ->
-          @toDevice.sendAsWhitelist = '*'
 
         it 'should return true', (next)->
           @sut.canSendAs( @fromDevice, @toDevice, (error, permission) =>
@@ -618,16 +555,6 @@ describe 'CheckWhitelist', ->
             next()
           )
 
-      describe 'when toDevice has a discoverAsWhitelist is "*"', ->
-        beforeEach ->
-          @toDevice.discoverAsWhitelist = '*'
-
-        it 'should return true', (next)->
-          @sut.canDiscoverAs( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.false
-            next()
-          )
-
     describe 'when fromDevice owns toDevice', ->
       beforeEach ->
         @fromDevice = owner: 4321, uuid: 1234
@@ -709,16 +636,6 @@ describe 'CheckWhitelist', ->
             next()
           )
 
-      describe 'when toDevice has a configureAsWhitelist is "*"', ->
-        beforeEach ->
-          @toDevice.configureAsWhitelist = '*'
-
-        it 'should return true', (next)->
-          @sut.canConfigureAs( @fromDevice, @toDevice, (error, permission) =>
-            expect(permission).to.be.true
-            next()
-          )
-
     describe 'when fromDevice owns toDevice', ->
       beforeEach ->
         @fromDevice = owner: 4321, uuid: 1234
@@ -740,83 +657,3 @@ describe 'CheckWhitelist', ->
           expect(permission).to.be.false
           next()
         )
-
-  describe 'canConfigure', ->
-    it 'should exist', ->
-      @getDatabaseForDevice = (device) =>
-        {
-          devices:
-            findOne: (query, callback) =>
-              callback null,device
-        }
-
-      @sut.database = @getDatabaseForDevice()
-      expect(@sut.canConfigure).to.exist
-
-    describe 'when fromDevice is undefined', ->
-      it 'should return false', (next) ->
-        @sut.canConfigure( undefined, uuid: 1, (error, permission) =>
-          expect(permission).to.be.false
-          next()
-        )
-
-    describe 'when toDevice is undefined', ->
-      it 'should return false', (next) ->
-        @sut.canConfigure( uuid: 1, undefined, (error, permission) =>
-          expect(permission).to.be.false
-          next()
-        )
-
-    describe 'when toDevice is the same as fromDevice', ->
-      beforeEach ->
-        @fromDevice = uuid: 1
-        @toDevice = uuid: 1
-
-      it 'should return true', (next) ->
-        @sut.canConfigure( @fromDevice, @toDevice, (error, permission) =>
-          expect(permission).to.be.true
-          next()
-        )
-
-    describe 'when a device is in the configureWhitelist', ->
-      beforeEach (next) ->
-        @fromDevice = uuid: 1
-        @sut._checkLists = sinon.stub().yields null, true
-        @toDevice = uuid: 8, configureWhitelist: [7], configureBlacklist: [6]
-        @sut.canConfigure(@fromDevice, @toDevice, (error, permission) =>
-          @result = permission
-          next()
-        )
-
-      it 'should call checkLists', ->
-        expect(@sut._checkLists).to.have.been.called
-
-      it 'should call checkLists', ->
-        expect(@sut._checkLists).to.have.been.calledWith @fromDevice, @toDevice, @toDevice.configureWhitelist, @toDevice.configureBlacklist, false
-
-      it 'should have a result of true', ->
-        expect(@result).to.be.true
-
-    describe 'when a different device is in the configureWhitelist', ->
-      beforeEach (next)->
-        @sut._checkLists = sinon.stub().yields null, false
-        @sut.canConfigure(null, null, (error, permission) =>
-          @result = permission
-          next()
-        )
-
-      it 'should have a result of false', ->
-        expect(@result).to.be.false
-
-    describe 'when a different device is in the configureWhitelist', ->
-      beforeEach (next) ->
-        @fromDevice = uuid: 7
-        @toDevice = uuid: 8, configureWhitelist: [5], configureBlacklist: [6]
-        @sut._checkLists = sinon.stub().yields null, false
-        @sut.canConfigure(@fromDevice, @toDevice, (error, permission) =>
-          @result = permission
-          next()
-        )
-
-      it 'should call checkLists', ->
-        expect(@sut._checkLists).to.have.been.calledWith @fromDevice, @toDevice, @toDevice.configureWhitelist, @toDevice.configureBlacklist, false

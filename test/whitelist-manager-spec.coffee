@@ -1,30 +1,33 @@
+mongojs = require 'mongojs'
+Datastore = require 'meshblu-core-datastore'
 WhitelistManager = require '../src/whitelist-manager'
 
 describe 'WhitelistManager', ->
+  beforeEach (done) ->
+    @datastore = new Datastore
+      database: mongojs 'test-whitelist-manager'
+      collection: 'devices'
+    @datastore.remove => done()
+
   beforeEach ->
     @uuidAliasResolver = resolve: (uuid, callback) => callback(null, uuid)
-
-    @datastore =
-      findOne: sinon.stub()
 
     @sut = new WhitelistManager {@datastore, @uuidAliasResolver}
 
   describe '->canConfigure', ->
     describe 'when called with a valid toUuid, fromUuid', ->
       beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'great-scott'
-          .yields null,
-            uuid: 'oh boy'
-            configureWhitelist: ['great-scott']
+        device =
+          uuid: 'oh boy'
+        @datastore.insert device, done
 
-        @datastore
-          .findOne
-          .withArgs uuid: 'oh boy'
-          .yields null,
-            uuid: 'oh boy'
+      beforeEach (done) ->
+        device =
+          uuid: 'great-scott'
+          configureWhitelist: ['oh boy']
+        @datastore.insert device, done
 
+      beforeEach (done) ->
         @sut.canConfigure fromUuid: 'oh boy', toUuid: 'great-scott', (error, @canConfigure) =>
           done error
 
@@ -33,72 +36,77 @@ describe 'WhitelistManager', ->
 
     describe 'when called with a invalid toUuid, fromUuid', ->
       beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'ya son'
-          .yields null,
-            uuid: 'ya son'
-            configureWhitelist: ['not for real']
+        device =
+          uuid: 'ya son'
+          configureWhitelist: ['not for real']
+        @datastore.insert device, done
 
-        @datastore
-          .findOne
-          .withArgs uuid: 'for real'
-          .yields null,
-            uuid: 'for real'
+      beforeEach (done) ->
+        device =
+          uuid: 'for real'
+        @datastore.insert device, done
 
-        @sut.canConfigure fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigure) =>
-          done error
+      beforeEach (done) ->
+          @sut.canConfigure fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigure) =>
+            done error
 
       it 'should have a can configure of false', ->
         expect(@canConfigure).to.be.false
 
-    describe 'when called and toDevice fetch yields an error', ->
+  describe '->canConfigureAs', ->
+    describe 'when called with a valid toUuid, fromUuid', ->
       beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'quit dreaming'
-          .yields new Error("no way")
+        device =
+          uuid: 'oh boy'
+        @datastore.insert device, done
 
-        @sut.canConfigure fromUuid: 'nobody cares', toUuid: 'quit dreaming', (@error) => done()
-
-      it 'should have an error', ->
-        expect(@error.message).to.equal 'no way'
-
-    describe 'when called and fromDevice fetch yields an error', ->
       beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'forget about it'
-          .yields null,
-            uuid: 'forget about it'
+        device =
+          uuid: 'great-scott'
+          configureAsWhitelist: ['oh boy']
+        @datastore.insert device, done
 
-        @datastore
-          .findOne
-          .withArgs uuid: 'sunshine and rainbows'
-          .yields new Error("cry me a river")
+      beforeEach (done) ->
+        @sut.canConfigureAs fromUuid: 'oh boy', toUuid: 'great-scott', (error, @canConfigureAs) =>
+          done error
 
-        @sut.canConfigure fromUuid: 'forget about it', toUuid: 'sunshine and rainbows', (@error) => done()
+      it 'should have a can configure of true', ->
+        expect(@canConfigureAs).to.be.true
 
-      it 'should have an error', ->
-        expect(@error.message).to.equal 'cry me a river'
+    describe 'when called with a invalid toUuid, fromUuid', ->
+      beforeEach (done) ->
+        device =
+          uuid: 'ya son'
+          configureAsWhitelist: ['not for real']
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        device =
+          uuid: 'for real'
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+          @sut.canConfigureAs fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigureAs) =>
+            done error
+
+      it 'should have a can configure of false', ->
+        expect(@canConfigureAs).to.be.false
 
   describe '->canDiscover', ->
     describe 'when called with a valid toUuid, fromUuid', ->
       beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'great-scott'
-          .yields null,
-            uuid: 'great-scott'
-            discoverWhitelist: ['oh boy']
+        device =
+          uuid: 'oh boy'
+        @datastore.insert device, done
 
-        @datastore
-          .findOne
-          .withArgs uuid: 'oh boy'
-          .yields null,
-            uuid: 'oh boy'
+      beforeEach (done) ->
+        device =
+          uuid: 'great-scott'
+          discoverWhitelist: ['oh boy']
+        @datastore.insert device, done
 
-        @sut.canDiscover fromUuid: 'great-scott', toUuid: 'oh boy', (error, @canDiscover) =>
+      beforeEach (done) ->
+        @sut.canDiscover fromUuid: 'oh boy', toUuid: 'great-scott', (error, @canDiscover) =>
           done error
 
       it 'should have a can discover of true', ->
@@ -106,124 +114,214 @@ describe 'WhitelistManager', ->
 
     describe 'when called with a invalid toUuid, fromUuid', ->
       beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'ya son'
-          .yields null,
-            uuid: 'ya son'
-            discoverWhitelist: ['not for real']
+        device =
+          uuid: 'ya son'
+          discoverWhitelist: ['not for real']
+        @datastore.insert device, done
 
-        @datastore
-          .findOne
-          .withArgs uuid: 'for real'
-          .yields null,
-            uuid: 'for real'
+      beforeEach (done) ->
+        device =
+          uuid: 'for real'
+        @datastore.insert device, done
 
-        @sut.canDiscover fromUuid: 'for real', toUuid: 'ya son', (error, @canDiscover) =>
-          done error
+      beforeEach (done) ->
+          @sut.canDiscover fromUuid: 'ya son', toUuid: 'for real', (error, @canDiscover) =>
+            done error
 
       it 'should have a can discover of false', ->
         expect(@canDiscover).to.be.false
 
-    describe 'when called and toDevice fetch yields an error', ->
-      beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'quit dreaming'
-          .yields new Error("no way")
-
-        @sut.canDiscover fromUuid: 'nobody cares', toUuid: 'quit dreaming', (@error) => done()
-
-      it 'should have an error', ->
-        expect(@error.message).to.equal 'no way'
-
-    describe 'when called and fromDevice fetch yields an error', ->
-      beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'forget about it'
-          .yields null,
-            uuid: 'forget about it'
-
-        @datastore
-          .findOne
-          .withArgs uuid: 'sunshine and rainbows'
-          .yields new Error("cry me a river")
-
-        @sut.canDiscover fromUuid: 'forget about it', toUuid: 'sunshine and rainbows', (@error) => done()
-
-      it 'should have an error', ->
-        expect(@error.message).to.equal 'cry me a river'
-
   describe '->canDiscoverAs', ->
     describe 'when called with a valid toUuid, fromUuid', ->
       beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'great-scott'
-          .yields null,
-            uuid: 'great-scott'
-            discoverAsWhitelist: ['oh boy']
+        device =
+          uuid: 'oh boy'
+        @datastore.insert device, done
 
-        @datastore
-          .findOne
-          .withArgs uuid: 'oh boy'
-          .yields null,
-            uuid: 'oh boy'
+      beforeEach (done) ->
+        device =
+          uuid: 'great-scott'
+          discoverAsWhitelist: ['oh boy']
+        @datastore.insert device, done
 
-        @sut.canDiscoverAs fromUuid: 'great-scott', toUuid: 'oh boy', (error, @canDiscoverAs) =>
+      beforeEach (done) ->
+        @sut.canDiscoverAs fromUuid: 'oh boy', toUuid: 'great-scott', (error, @canDiscoverAs) =>
           done error
 
-      it 'should have a can discoverAs of true', ->
-        expect(@canDiscoverAs).to.be.false
+      it 'should have a can discover of true', ->
+        expect(@canDiscoverAs).to.be.true
 
     describe 'when called with a invalid toUuid, fromUuid', ->
       beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'ya son'
-          .yields null,
-            uuid: 'ya son'
-            discoverAsWhitelist: ['not for real']
+        device =
+          uuid: 'ya son'
+          discoverAsWhitelist: ['not for real']
+        @datastore.insert device, done
 
-        @datastore
-          .findOne
-          .withArgs uuid: 'for real'
-          .yields null,
-            uuid: 'for real'
+      beforeEach (done) ->
+        device =
+          uuid: 'for real'
+        @datastore.insert device, done
 
-        @sut.canDiscoverAs fromUuid: 'for real', toUuid: 'ya son', (error, @canDiscoverAs) =>
-          done error
+      beforeEach (done) ->
+          @sut.canDiscoverAs fromUuid: 'ya son', toUuid: 'for real', (error, @canDiscoverAs) =>
+            done error
 
-      it 'should have a can configure of false', ->
+      it 'should have a can discover of false', ->
         expect(@canDiscoverAs).to.be.false
 
-    describe 'when called and toDevice fetch yields an error', ->
+  describe '->canReceive', ->
+    describe 'when called with a valid toUuid, fromUuid', ->
       beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'quit dreaming'
-          .yields new Error("no way")
+        device =
+          uuid: 'oh boy'
+        @datastore.insert device, done
 
-        @sut.canDiscoverAs fromUuid: 'nobody cares', toUuid: 'quit dreaming', (@error) => done()
-
-      it 'should have an error', ->
-        expect(@error.message).to.equal 'no way'
-
-    describe 'when called and fromDevice fetch yields an error', ->
       beforeEach (done) ->
-        @datastore
-          .findOne
-          .withArgs uuid: 'forget about it'
-          .yields null,
-            uuid: 'forget about it'
+        device =
+          uuid: 'great-scott'
+          receiveWhitelist: ['oh boy']
+        @datastore.insert device, done
 
-        @datastore
-          .findOne
-          .withArgs uuid: 'sunshine and rainbows'
-          .yields new Error("cry me a river")
+      beforeEach (done) ->
+        @sut.canReceive fromUuid: 'oh boy', toUuid: 'great-scott', (error, @canReceive) =>
+          done error
 
-        @sut.canDiscoverAs fromUuid: 'forget about it', toUuid: 'sunshine and rainbows', (@error) => done()
+      it 'should have a can receive of true', ->
+        expect(@canReceive).to.be.true
 
-      it 'should have an error', ->
-        expect(@error.message).to.equal 'cry me a river'
+    describe 'when called with a invalid toUuid, fromUuid', ->
+      beforeEach (done) ->
+        device =
+          uuid: 'ya son'
+          receiveWhitelist: ['not for real']
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        device =
+          uuid: 'for real'
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+          @sut.canReceive fromUuid: 'ya son', toUuid: 'for real', (error, @canReceive) =>
+            done error
+
+      it 'should have a can receive of false', ->
+        expect(@canReceive).to.be.false
+
+  describe '->canReceiveAs', ->
+    describe 'when called with a valid toUuid, fromUuid', ->
+      beforeEach (done) ->
+        device =
+          uuid: 'oh boy'
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        device =
+          uuid: 'great-scott'
+          receiveAsWhitelist: ['oh boy']
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        @sut.canReceiveAs fromUuid: 'oh boy', toUuid: 'great-scott', (error, @canReceiveAs) =>
+          done error
+
+      it 'should have a can receive of true', ->
+        expect(@canReceiveAs).to.be.true
+
+    describe 'when called with a invalid toUuid, fromUuid', ->
+      beforeEach (done) ->
+        device =
+          uuid: 'ya son'
+          receiveAsWhitelist: ['not for real']
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        device =
+          uuid: 'for real'
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+          @sut.canReceiveAs fromUuid: 'ya son', toUuid: 'for real', (error, @canReceiveAs) =>
+            done error
+
+      it 'should have a can receive of false', ->
+        expect(@canReceiveAs).to.be.false
+
+  describe '->canSend', ->
+    describe 'when called with a valid toUuid, fromUuid', ->
+      beforeEach (done) ->
+        device =
+          uuid: 'oh boy'
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        device =
+          uuid: 'great-scott'
+          sendWhitelist: ['oh boy']
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        @sut.canSend fromUuid: 'oh boy', toUuid: 'great-scott', (error, @canSend) =>
+          done error
+
+      it 'should have a can send of true', ->
+        expect(@canSend).to.be.true
+
+    describe 'when called with a invalid toUuid, fromUuid', ->
+      beforeEach (done) ->
+        device =
+          uuid: 'ya son'
+          sendWhitelist: ['not for real']
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        device =
+          uuid: 'for real'
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+          @sut.canSend fromUuid: 'ya son', toUuid: 'for real', (error, @canSend) =>
+            done error
+
+      it 'should have a can send of false', ->
+        expect(@canSend).to.be.false
+
+  describe '->canSendAs', ->
+    describe 'when called with a valid toUuid, fromUuid', ->
+      beforeEach (done) ->
+        device =
+          uuid: 'oh boy'
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        device =
+          uuid: 'great-scott'
+          sendAsWhitelist: ['oh boy']
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        @sut.canSendAs fromUuid: 'oh boy', toUuid: 'great-scott', (error, @canSendAs) =>
+          done error
+
+      it 'should have a can send of true', ->
+        expect(@canSendAs).to.be.true
+
+    describe 'when called with a invalid toUuid, fromUuid', ->
+      beforeEach (done) ->
+        device =
+          uuid: 'ya son'
+          sendAsWhitelist: ['not for real']
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        device =
+          uuid: 'for real'
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+          @sut.canSendAs fromUuid: 'ya son', toUuid: 'for real', (error, @canSendAs) =>
+            done error
+
+      it 'should have a can send of false', ->
+        expect(@canSendAs).to.be.false
