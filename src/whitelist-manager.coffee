@@ -4,14 +4,30 @@ class WhitelistManager
   constructor: ({@datastore,@uuidAliasResolver}) ->
     @checkWhitelist = new CheckWhitelist {@uuidAliasResolver}
 
+  @FIELD_MAP:
+    canConfigure:   'configureWhitelist'
+    canConfigureAs: 'configureAsWhitelist'
+    canDiscover:    'discoverWhitelist'
+    canDiscoverAs:  'discoverAsWhitelist'
+    canReceive:     'receiveWhitelist'
+    canReceiveAs:   'receiveAsWhitelist'
+    canSend:        'sendWhitelist'
+    canSendAs:      'sendAsWhitelist'
+
   _check: ({method, toUuid, fromUuid}, callback) =>
+    field = WhitelistManager.FIELD_MAP[method]
+    projection =
+      "#{field}": true
+      owner: true
+      uuid: true
+
     @uuidAliasResolver.resolve toUuid, (error, toUuid) =>
       return callback error if error?
-      @datastore.findOne uuid: toUuid, (error, toDevice) =>
+      @datastore.findOne {uuid: toUuid}, projection, (error, toDevice) =>
         return callback error if error?
         @uuidAliasResolver.resolve fromUuid, (error, fromUuid) =>
           return callback error if error?
-          @datastore.findOne uuid: fromUuid, (error, fromDevice) =>
+          @datastore.findOne {uuid: fromUuid}, projection, (error, fromDevice) =>
             return callback error if error?
             @checkWhitelist[method] fromDevice, toDevice, (error, verified) =>
               callback null, verified
