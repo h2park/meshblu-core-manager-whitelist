@@ -34,6 +34,19 @@ describe 'WhitelistManager', ->
       it 'should have a can configure of true', ->
         expect(@canConfigure).to.be.true
 
+    describe 'when toUuid and fromUuid are the same', ->
+      beforeEach (done) ->
+        device =
+          uuid: 'oh boy'
+        @datastore.insert device, done
+
+      beforeEach (done) ->
+        @sut.canConfigure fromUuid: 'oh boy', toUuid: 'oh boy', (error, @canConfigure) =>
+          done error
+
+      it 'should have a can configure of true', ->
+        expect(@canConfigure).to.be.true
+
     describe 'when called with a invalid toUuid, fromUuid', ->
       beforeEach (done) ->
         device =
@@ -52,6 +65,44 @@ describe 'WhitelistManager', ->
 
       it 'should have a can configure of false', ->
         expect(@canConfigure).to.be.false
+
+  describe 'when called fromUuid is the owner', ->
+    beforeEach (done) ->
+      device =
+        uuid: 'ya son'
+      @datastore.insert device, done
+
+    beforeEach (done) ->
+      device =
+        uuid: 'for real'
+        owner: 'ya son'
+      @datastore.insert device, done
+
+    beforeEach (done) ->
+        @sut.canConfigure fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigure) =>
+          done error
+
+    it 'should have a can configure of true', ->
+      expect(@canConfigure).to.be.true
+
+  describe 'when *', ->
+    beforeEach (done) ->
+      device =
+        uuid: 'ya son'
+      @datastore.insert device, done
+
+    beforeEach (done) ->
+      device =
+        uuid: 'for real'
+        configureWhitelist: ['*']
+      @datastore.insert device, done
+
+    beforeEach (done) ->
+        @sut.canConfigure fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigure) =>
+          done error
+
+    it 'should have a can configure of true', ->
+      expect(@canConfigure).to.be.true
 
   describe '->canConfigureAs', ->
     describe 'when called with a valid toUuid, fromUuid', ->

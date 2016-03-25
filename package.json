@@ -1,6 +1,6 @@
 {
   "name": "meshblu-core-manager-whitelist",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Meshblu core manager for whitelists",
   "main": "index.js",
   "scripts": {
@@ -32,6 +32,8 @@
     "async": "^1.5.0",
     "coffee-script": "^1.10.0",
     "debug": "^2.2.0",
-    "lodash": "^3.10.1"
+    "lodash": "^3.10.1",
+    "meshblu-device-transmogrifier": "^1.0.0",
+    "meshblu-list-checker": "^1.0.1"
   }
 }

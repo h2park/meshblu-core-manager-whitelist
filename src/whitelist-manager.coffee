@@ -1,23 +1,32 @@
-CheckWhitelist = require './check-whitelist'
+_                    = require 'lodash'
+async                = require 'async'
+ListChecker          = require 'meshblu-list-checker'
+DeviceTransmogrifier = require 'meshblu-device-transmogrifier'
 
 class WhitelistManager
   constructor: ({@datastore,@uuidAliasResolver}) ->
-    @checkWhitelist = new CheckWhitelist {@uuidAliasResolver}
 
   @FIELD_MAP:
-    canConfigure:   'configureWhitelist'
-    canConfigureAs: 'configureAsWhitelist'
-    canDiscover:    'discoverWhitelist'
-    canDiscoverAs:  'discoverAsWhitelist'
-    canReceive:     'receiveWhitelist'
-    canReceiveAs:   'receiveAsWhitelist'
-    canSend:        'sendWhitelist'
-    canSendAs:      'sendAsWhitelist'
+    canConfigure:   'configure.update'
+    canConfigureAs: 'configure.as'
+    canDiscover:    'discover.view'
+    canDiscoverAs:  'discover.as'
+    canReceive:     'broadcast.sent'
+    canReceiveAs:   'message.received'
+    canSend:        'message.from'
+    canSendAs:      'message.as'
 
   _check: ({method, toUuid, fromUuid}, callback) =>
     field = WhitelistManager.FIELD_MAP[method]
     projection =
-      "#{field}": true
+      configureWhitelist: true
+      configureAsWhitelist: true
+      discoverWhitelist: true
+      discoverAsWhitelist: true
+      receiveWhitelist: true
+      receiveAsWhitelist: true
+      sendWhitelist: true
+      sendAsWhitelist: true
       owner: true
       uuid: true
 
@@ -27,10 +36,15 @@ class WhitelistManager
         return callback error if error?
         @uuidAliasResolver.resolve fromUuid, (error, fromUuid) =>
           return callback error if error?
-          @datastore.findOne {uuid: fromUuid}, projection, (error, fromDevice) =>
-            return callback error if error?
-            @checkWhitelist[method] fromDevice, toDevice, (error, verified) =>
-              callback null, verified
+          return callback null, true if toUuid == fromUuid
+
+          transmogrifier = new DeviceTransmogrifier toDevice
+          transmogrifiedDevice = transmogrifier.transmogrify()
+
+          list = _.get transmogrifiedDevice, "meshblu.whitelists.#{field}"
+          @_resolveList list, (error, resolvedList) =>
+            listChecker = new ListChecker resolvedList
+            callback null, listChecker.check fromUuid
 
   canConfigure: ({fromUuid, toUuid}, callback) =>
     @_check {method: 'canConfigure', fromUuid, toUuid}, callback
@@ -55,5 +69,16 @@ class WhitelistManager
 
   canSendAs: ({fromUuid, toUuid}, callback) =>
     @_check {method: 'canSendAs', fromUuid, toUuid}, callback
+
+  _resolveList: (list, callback) =>
+    resolvedList = {}
+    async.each _.keys(list), (uuid, next) =>
+      @uuidAliasResolver.resolve uuid, (error, resolvedUuid) =>
+        return next error if error?
+        resolvedList[resolvedUuid] = list[uuid]
+        next()
+    , (error) =>
+        return callback error if error?
+        callback null, resolvedList
 
 module.exports = WhitelistManager
