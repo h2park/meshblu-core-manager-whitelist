@@ -37,6 +37,7 @@ class WhitelistManager
         @uuidAliasResolver.resolve fromUuid, (error, fromUuid) =>
           return callback error if error?
           return callback null, true if toUuid == fromUuid
+          return callback new Error 'device does not exist' if !toDevice?
 
           transmogrifier = new DeviceTransmogrifier toDevice
           transmogrifiedDevice = transmogrifier.transmogrify()
