@@ -16,8 +16,8 @@ class WhitelistManager
     canSend:        'message.from'
     canSendAs:      'message.as'
 
-  _check: ({method, toUuid, fromUuid}, callback) =>
-    field = WhitelistManager.FIELD_MAP[method]
+  _check: ({method, toUuid, fromUuid, whitelist}, callback) =>
+    field = whitelist || WhitelistManager.FIELD_MAP[method]
     projection =
       configureWhitelist: true
       configureAsWhitelist: true
@@ -27,6 +27,7 @@ class WhitelistManager
       receiveAsWhitelist: true
       sendWhitelist: true
       sendAsWhitelist: true
+      meshblu: true
       owner: true
       uuid: true
 
@@ -70,6 +71,9 @@ class WhitelistManager
 
   canSendAs: ({fromUuid, toUuid}, callback) =>
     @_check {method: 'canSendAs', fromUuid, toUuid}, callback
+
+  canSeeBroadcastsSent: ({subscriber, broadcaster}, callback) =>
+    @_check {toUuid: broadcaster, fromUuid: subscriber, whitelist: 'broadcast.sent'}, callback
 
   _resolveList: (list, callback) =>
     resolvedList = {}
