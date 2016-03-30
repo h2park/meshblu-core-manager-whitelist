@@ -72,8 +72,41 @@ class WhitelistManager
   canSendAs: ({fromUuid, toUuid}, callback) =>
     @_check {method: 'canSendAs', fromUuid, toUuid}, callback
 
-  canSeeBroadcastsSent: ({subscriber, broadcaster}, callback) =>
-    @_check {toUuid: broadcaster, fromUuid: subscriber, whitelist: 'broadcast.sent'}, callback
+  checkBroadcastSent: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'broadcast.sent'}, callback
+
+  checkBroadcastReceived: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'broadcast.received'}, callback
+
+  checkDiscoverView: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'discover.view'}, callback
+
+  checkDiscoverAs: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'discover.as'}, callback
+
+  checkConfigureUpdate: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'configure.update'}, callback
+
+  checkConfigureAs: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'configure.as'}, callback
+
+  checkConfigureSent: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'configure.sent'}, callback
+
+  checkConfigureReceived: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'configure.received'}, callback
+
+  checkMessageFrom: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'message.from'}, callback
+
+  checkMessageAs: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'message.as'}, callback
+
+  checkMessageSent: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'message.sent'}, callback
+
+  checkMessageReceived: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'message.received'}, callback
 
   _resolveList: (list, callback) =>
     resolvedList = {}

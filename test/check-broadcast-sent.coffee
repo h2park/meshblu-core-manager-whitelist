@@ -14,8 +14,8 @@ describe 'WhitelistManager', ->
 
     @sut = new WhitelistManager {@datastore, @uuidAliasResolver}
 
-  describe '->canSeeBroadcastsSent', ->
-    describe 'when called with a valid broadcaster and subscriber', ->
+  describe '->checkBroadcastSent', ->
+    describe 'when called with a valid emitter and subscriber', ->
       beforeEach (done) ->
         device =
           uuid: 'oh boy'
@@ -34,26 +34,26 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-        @sut.canSeeBroadcastsSent broadcaster: 'great-scott', subscriber: 'ohBoy' , (error, @canSeeBroadcastsSent) =>
+        @sut.checkBroadcastSent emitter: 'great-scott', subscriber: 'ohBoy' , (error, @checkBroadcastSent) =>
           done error
 
-      it 'should have a can broadcast sent of true', ->
-        expect(@canSeeBroadcastsSent).to.be.true
+      it 'should have a checkBroadcastSent sent of true', ->
+        expect(@checkBroadcastSent).to.be.true
 
-    describe 'when subscriber and broadcaster are the same', ->
+    describe 'when subscriber and emitter are the same', ->
       beforeEach (done) ->
         device =
           uuid: 'ohBoy'
         @datastore.insert device, done
 
       beforeEach (done) ->
-        @sut.canSeeBroadcastsSent subscriber: 'ohBoy', broadcaster: 'ohBoy', (error, @canSeeBroadcastsSent) =>
+        @sut.checkBroadcastSent subscriber: 'ohBoy', emitter: 'ohBoy', (error, @checkBroadcastSent) =>
           done error
 
-      it 'should have a can broadcast sent of true', ->
-        expect(@canSeeBroadcastsSent).to.be.true
+      it 'should have a checkBroadcastSent sent of true', ->
+        expect(@checkBroadcastSent).to.be.true
 
-    describe 'when called with a invalid subscriber, broadcaster', ->
+    describe 'when called with a invalid subscriber, emitter', ->
       beforeEach (done) ->
         device =
           uuid: 'ya son'
@@ -72,26 +72,26 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-        @sut.canSeeBroadcastsSent subscriber: 'ya son', broadcaster: 'for real', (error, @canSeeBroadcastsSent) =>
+        @sut.checkBroadcastSent subscriber: 'ya son', emitter: 'for real', (error, @checkBroadcastSent) =>
           done error
 
-      it 'should have a can broadcast sent of false', ->
-        expect(@canSeeBroadcastsSent).to.be.false
+      it 'should have a checkBroadcastSent sent of false', ->
+        expect(@checkBroadcastSent).to.be.false
 
-    describe 'when subscriber and broadcaster are the same', ->
+    describe 'when subscriber and emitter are the same', ->
       beforeEach (done) ->
         device =
           uuid: 'oh boy'
         @datastore.insert device, done
 
       beforeEach (done) ->
-        @sut.canSeeBroadcastsSent broadcaster: 'oh boy', subscriber: 'oh boy', (error, @canSeeBroadcastsSent) =>
+        @sut.checkBroadcastSent emitter: 'oh boy', subscriber: 'oh boy', (error, @checkBroadcastSent) =>
           done error
 
-      it 'should have a can broadcast sent of true', ->
-        expect(@canSeeBroadcastsSent).to.be.true
+      it 'should have a checkBroadcastSent sent of true', ->
+        expect(@checkBroadcastSent).to.be.true
 
-    describe 'when called with a invalid subscriber, broadcaster', ->
+    describe 'when called with a invalid subscriber, emitter', ->
       beforeEach (done) ->
         device =
           uuid: 'ya son'
@@ -109,8 +109,8 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-        @sut.canSeeBroadcastsSent broadcaster: 'ya son', subscriber: 'for real', (error, @canSeeBroadcastsSent) =>
+        @sut.checkBroadcastSent emitter: 'ya son', subscriber: 'for real', (error, @checkBroadcastSent) =>
           done error
 
-      it 'should have a can broadcast sent of false', ->
-        expect(@canSeeBroadcastsSent).to.be.false
+      it 'should have a checkBroadcastSent sent of false', ->
+        expect(@checkBroadcastSent).to.be.false
