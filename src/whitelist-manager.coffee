@@ -35,7 +35,7 @@ class WhitelistManager
       return callback error if error?
       @datastore.findOne {uuid: toUuid}, projection, (error, toDevice) =>
         return callback error if error?
-        return callback new Error 'device does not exist' if !toDevice?
+        return callback null, false if !toDevice?
 
         @uuidAliasResolver.resolve fromUuid, (error, fromUuid) =>
           return callback error if error?
