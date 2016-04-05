@@ -80,13 +80,13 @@ class WhitelistManager
     @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'broadcast.received'}, callback
 
   checkDiscoverView: ({emitter, subscriber}, callback) =>
-    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'discover.view'}, callback
+    @_check {toUuid: subscriber, fromUuid: emitter, whitelist: 'discover.view'}, callback
 
   checkDiscoverAs: ({emitter, subscriber}, callback) =>
     @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'discover.as'}, callback
 
   checkConfigureUpdate: ({emitter, subscriber}, callback) =>
-    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'configure.update'}, callback
+    @_check {toUuid: subscriber, fromUuid: emitter, whitelist: 'configure.update'}, callback
 
   checkConfigureAs: ({emitter, subscriber}, callback) =>
     @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'configure.as'}, callback
@@ -98,7 +98,7 @@ class WhitelistManager
     @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'configure.received'}, callback
 
   checkMessageFrom: ({emitter, subscriber}, callback) =>
-    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'message.from'}, callback
+    @_check {toUuid: subscriber, fromUuid: emitter, whitelist: 'message.from'}, callback
 
   checkMessageAs: ({emitter, subscriber}, callback) =>
     @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'message.as'}, callback
