@@ -34,7 +34,7 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-        @sut.checkMessageFrom emitter: 'great-scott', subscriber: 'ohBoy' , (error, @checkMessageFrom) =>
+        @sut.checkMessageFrom emitter: 'ohBoy', subscriber: 'great-scott' , (error, @checkMessageFrom) =>
           done error
 
       it 'should have a checkMessageFrom sent of true', ->

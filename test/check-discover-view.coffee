@@ -34,7 +34,7 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-        @sut.checkDiscoverView emitter: 'great-scott', subscriber: 'ohBoy' , (error, @checkDiscoverView) =>
+        @sut.checkDiscoverView emitter: 'ohBoy', subscriber: 'great-scott' , (error, @checkDiscoverView) =>
           done error
 
       it 'should have a checkDiscoverView sent of true', ->

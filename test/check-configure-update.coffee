@@ -34,7 +34,7 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-        @sut.checkConfigureUpdate emitter: 'great-scott', subscriber: 'ohBoy' , (error, @checkConfigureUpdate) =>
+        @sut.checkConfigureUpdate emitter: 'ohBoy', subscriber: 'great-scott' , (error, @checkConfigureUpdate) =>
           done error
 
       it 'should have a checkConfigureUpdate sent of true', ->
