@@ -31,7 +31,7 @@ class WhitelistManager
       owner: true
       uuid: true
 
-    debug "checking if #{toUuid} can #{field} to #{fromUuid}"
+    debug "checking if #{fromUuid} can #{field} to #{toUuid}"
     @uuidAliasResolver.resolve toUuid, (error, toUuid) =>
       return callback error if error?
       @datastore.findOne {uuid: toUuid}, projection, (error, toDevice) =>
