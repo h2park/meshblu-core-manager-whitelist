@@ -1,8 +1,8 @@
-_                    = require 'lodash'
-async                = require 'async'
-ListChecker          = require 'meshblu-list-checker'
-DeviceTransmogrifier = require 'meshblu-device-transmogrifier'
-
+_                     = require 'lodash'
+async                 = require 'async'
+ListChecker           = require 'meshblu-list-checker'
+DeviceTransmogrifier  = require 'meshblu-device-transmogrifier'
+debug                 = require("debug")("meshblu-core-manager-whitelist")
 class WhitelistManager
   constructor: ({@datastore,@uuidAliasResolver}) ->
 
@@ -31,6 +31,7 @@ class WhitelistManager
       owner: true
       uuid: true
 
+    debug "checking if #{toUuid} can #{field} to #{fromUuid}"
     @uuidAliasResolver.resolve toUuid, (error, toUuid) =>
       return callback error if error?
       @datastore.findOne {uuid: toUuid}, projection, (error, toDevice) =>
