@@ -29,8 +29,7 @@ describe 'WhitelistManager', ->
             version: '2.0.0'
             whitelists:
               configure:
-                sent:
-                  ohBoy: {}
+                sent: [{uuid: 'ohBoy'}]
         @datastore.insert device, done
 
       beforeEach (done) ->
@@ -61,8 +60,7 @@ describe 'WhitelistManager', ->
             version: '2.0.0'
             whitelists:
               configure:
-                sent:
-                  ohBoy: {}
+                sent: [{uuid: 'ohBoy'}]
 
         @datastore.insert device, done
 
@@ -99,8 +97,7 @@ describe 'WhitelistManager', ->
             version: '2.0.0'
             whitelists:
               configure:
-                sent:
-                  'not for real': true
+                sent: [{uuid: 'not for real'}]
         @datastore.insert device, done
 
       beforeEach (done) ->

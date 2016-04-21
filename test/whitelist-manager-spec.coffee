@@ -60,8 +60,8 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-          @sut.canConfigure fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigure) =>
-            done error
+        @sut.canConfigure fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigure) =>
+          done error
 
       it 'should have a can configure of false', ->
         expect(@canConfigure).to.be.false
@@ -79,8 +79,8 @@ describe 'WhitelistManager', ->
       @datastore.insert device, done
 
     beforeEach (done) ->
-        @sut.canConfigure fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigure) =>
-          done error
+      @sut.canConfigure fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigure) =>
+        done error
 
     it 'should have a can configure of true', ->
       expect(@canConfigure).to.be.true
@@ -98,8 +98,8 @@ describe 'WhitelistManager', ->
       @datastore.insert device, done
 
     beforeEach (done) ->
-        @sut.canConfigure fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigure) =>
-          done error
+      @sut.canConfigure fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigure) =>
+        done error
 
     it 'should have a can configure of true', ->
       expect(@canConfigure).to.be.true
@@ -137,8 +137,8 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-          @sut.canConfigureAs fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigureAs) =>
-            done error
+        @sut.canConfigureAs fromUuid: 'ya son', toUuid: 'for real', (error, @canConfigureAs) =>
+          done error
 
       it 'should have a can configure of false', ->
         expect(@canConfigureAs).to.be.false
@@ -176,8 +176,8 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-          @sut.canDiscover fromUuid: 'ya son', toUuid: 'for real', (error, @canDiscover) =>
-            done error
+        @sut.canDiscover fromUuid: 'ya son', toUuid: 'for real', (error, @canDiscover) =>
+          done error
 
       it 'should have a can discover of false', ->
         expect(@canDiscover).to.be.false
@@ -215,8 +215,8 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-          @sut.canDiscoverAs fromUuid: 'ya son', toUuid: 'for real', (error, @canDiscoverAs) =>
-            done error
+        @sut.canDiscoverAs fromUuid: 'ya son', toUuid: 'for real', (error, @canDiscoverAs) =>
+          done error
 
       it 'should have a can discover of false', ->
         expect(@canDiscoverAs).to.be.false
@@ -254,8 +254,8 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-          @sut.canReceive fromUuid: 'ya son', toUuid: 'for real', (error, @canReceive) =>
-            done error
+        @sut.canReceive fromUuid: 'ya son', toUuid: 'for real', (error, @canReceive) =>
+          done error
 
       it 'should have a can receive of false', ->
         expect(@canReceive).to.be.false
@@ -293,8 +293,8 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-          @sut.canReceiveAs fromUuid: 'ya son', toUuid: 'for real', (error, @canReceiveAs) =>
-            done error
+        @sut.canReceiveAs fromUuid: 'ya son', toUuid: 'for real', (error, @canReceiveAs) =>
+          done error
 
       it 'should have a can receive of false', ->
         expect(@canReceiveAs).to.be.false
@@ -332,8 +332,8 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-          @sut.canSend fromUuid: 'ya son', toUuid: 'for real', (error, @canSend) =>
-            done error
+        @sut.canSend fromUuid: 'ya son', toUuid: 'for real', (error, @canSend) =>
+          done error
 
       it 'should have a can send of false', ->
         expect(@canSend).to.be.false
@@ -371,8 +371,8 @@ describe 'WhitelistManager', ->
         @datastore.insert device, done
 
       beforeEach (done) ->
-          @sut.canSendAs fromUuid: 'ya son', toUuid: 'for real', (error, @canSendAs) =>
-            done error
+        @sut.canSendAs fromUuid: 'ya son', toUuid: 'for real', (error, @canSendAs) =>
+          done error
 
       it 'should have a can send of false', ->
         expect(@canSendAs).to.be.false

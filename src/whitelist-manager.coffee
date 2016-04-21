@@ -118,7 +118,7 @@ class WhitelistManager
         resolvedList[resolvedUuid] = list[uuid]
         next()
     , (error) =>
-        return callback error if error?
-        callback null, resolvedList
+      return callback error if error?
+      callback null, resolvedList
 
 module.exports = WhitelistManager

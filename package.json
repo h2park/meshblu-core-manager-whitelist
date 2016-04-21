@@ -33,7 +33,7 @@
     "coffee-script": "^1.10.0",
     "debug": "^2.2.0",
     "lodash": "^3.10.1",
-    "meshblu-device-transmogrifier": "^1.0.0",
-    "meshblu-list-checker": "^1.0.1"
+    "meshblu-device-transmogrifier": "^2.0.0",
+    "meshblu-list-checker": "^2.0.0"
   }
 }
