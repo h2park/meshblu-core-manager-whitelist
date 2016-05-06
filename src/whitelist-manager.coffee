@@ -3,21 +3,11 @@ async                 = require 'async'
 ListChecker           = require 'meshblu-list-checker'
 DeviceTransmogrifier  = require 'meshblu-device-transmogrifier'
 debug                 = require("debug")("meshblu-core-manager-whitelist")
+
 class WhitelistManager
   constructor: ({@datastore,@uuidAliasResolver}) ->
 
-  @FIELD_MAP:
-    canConfigure:   'configure.update'
-    canConfigureAs: 'configure.as'
-    canDiscover:    'discover.view'
-    canDiscoverAs:  'discover.as'
-    canReceive:     'broadcast.sent'
-    canReceiveAs:   'message.received'
-    canSend:        'message.from'
-    canSendAs:      'message.as'
-
-  _check: ({method, toUuid, fromUuid, whitelist}, callback) =>
-    field = whitelist || WhitelistManager.FIELD_MAP[method]
+  _check: ({toUuid, fromUuid, whitelist}, callback) =>
     projection =
       configureWhitelist: true
       configureAsWhitelist: true
@@ -27,11 +17,12 @@ class WhitelistManager
       receiveAsWhitelist: true
       sendWhitelist: true
       sendAsWhitelist: true
-      meshblu: true
+      'meshblu.whitelists': true
+      'meshblu.version': true
       owner: true
       uuid: true
 
-    debug "checking if #{fromUuid} can #{field} to #{toUuid}"
+    debug "checking if #{fromUuid} can #{whitelist} to #{toUuid}"
     @uuidAliasResolver.resolve toUuid, (error, toUuid) =>
       return callback error if error?
       @datastore.findOne {uuid: toUuid}, projection, (error, toDevice) =>
@@ -45,34 +36,34 @@ class WhitelistManager
           transmogrifier = new DeviceTransmogrifier toDevice
           transmogrifiedDevice = transmogrifier.transmogrify()
 
-          list = _.get transmogrifiedDevice, "meshblu.whitelists.#{field}"
+          list = _.get transmogrifiedDevice, "meshblu.whitelists.#{whitelist}"
           @_resolveList list, (error, resolvedList) =>
             listChecker = new ListChecker resolvedList
             callback null, listChecker.check fromUuid
 
   canConfigure: ({fromUuid, toUuid}, callback) =>
-    @_check {method: 'canConfigure', fromUuid, toUuid}, callback
+    @_check {fromUuid, toUuid, whitelist: 'configure.update'}, callback
 
   canConfigureAs: ({fromUuid, toUuid}, callback) =>
-    @_check {method: 'canConfigureAs', fromUuid, toUuid}, callback
+    @_check {fromUuid, toUuid, whitelist: 'configure.as'}, callback
 
   canDiscover: ({fromUuid, toUuid}, callback) =>
-    @_check {method: 'canDiscover', fromUuid, toUuid}, callback
+    @_check {fromUuid, toUuid, whitelist: 'discover.view'}, callback
 
   canDiscoverAs: ({fromUuid, toUuid}, callback) =>
-    @_check {method: 'canDiscoverAs', fromUuid, toUuid}, callback
+    @_check {fromUuid, toUuid, whitelist: 'discover.as'}, callback
 
   canReceive: ({fromUuid, toUuid}, callback) =>
-    @_check {method: 'canReceive', fromUuid, toUuid}, callback
+    @_check {fromUuid, toUuid, whitelist: 'broadcast.sent'}, callback
 
   canReceiveAs: ({fromUuid, toUuid}, callback) =>
-    @_check {method: 'canReceiveAs', fromUuid, toUuid}, callback
+    @_check {fromUuid, toUuid, whitelist: 'message.received'}, callback
 
   canSend: ({fromUuid, toUuid}, callback) =>
-    @_check {method: 'canSend', fromUuid, toUuid}, callback
+    @_check {fromUuid, toUuid, whitelist: 'message.from'}, callback
 
   canSendAs: ({fromUuid, toUuid}, callback) =>
-    @_check {method: 'canSendAs', fromUuid, toUuid}, callback
+    @_check {fromUuid, toUuid, whitelist: 'message.as'}, callback
 
   checkBroadcastSent: ({emitter, subscriber}, callback) =>
     @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'broadcast.sent'}, callback
@@ -111,14 +102,13 @@ class WhitelistManager
     @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'message.received'}, callback
 
   _resolveList: (list, callback) =>
-    resolvedList = {}
-    async.each _.keys(list), (uuid, next) =>
-      @uuidAliasResolver.resolve uuid, (error, resolvedUuid) =>
+    async.each list, (item, next) =>
+      @uuidAliasResolver.resolve item.uuid, (error, resolvedUuid) =>
         return next error if error?
-        resolvedList[resolvedUuid] = list[uuid]
+        item.uuid = resolvedUuid
         next()
     , (error) =>
       return callback error if error?
-      callback null, resolvedList
+      callback null, list
 
 module.exports = WhitelistManager

@@ -4,10 +4,11 @@ WhitelistManager = require '../src/whitelist-manager'
 
 describe 'check Broadcast Sent', ->
   beforeEach (done) ->
+    database = mongojs 'test-whitelist-manager', ['devices']
     @datastore = new Datastore
-      database: mongojs('test-whitelist-manager')
+      database: database
       collection: 'devices'
-    @datastore.remove => done()
+    database.devices.remove => done()
 
   beforeEach ->
     @uuidAliasResolver = resolve: (uuid, callback) => callback(null, uuid)
