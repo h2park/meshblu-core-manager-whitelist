@@ -41,6 +41,9 @@ class WhitelistManager
             listChecker = new ListChecker resolvedList
             callback null, listChecker.check fromUuid
 
+  canBroadcastAs: ({fromUuid, toUuid}, callback) =>
+    @_check {fromUuid, toUuid, whitelist: 'broadcast.as'}, callback
+
   canConfigure: ({fromUuid, toUuid}, callback) =>
     @_check {fromUuid, toUuid, whitelist: 'configure.update'}, callback
 
@@ -64,6 +67,9 @@ class WhitelistManager
 
   canSendAs: ({fromUuid, toUuid}, callback) =>
     @_check {fromUuid, toUuid, whitelist: 'message.as'}, callback
+
+  checkBroadcastAs: ({emitter, subscriber}, callback) =>
+    @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'broadcast.as'}, callback
 
   checkBroadcastSent: ({emitter, subscriber}, callback) =>
     @_check {toUuid: emitter, fromUuid: subscriber, whitelist: 'broadcast.sent'}, callback

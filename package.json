@@ -1,6 +1,6 @@
 {
   "name": "meshblu-core-manager-whitelist",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "Meshblu core manager for whitelists",
   "main": "index.js",
   "scripts": {
